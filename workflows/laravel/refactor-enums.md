@@ -6,6 +6,13 @@
 
 0. **Read the execution guide first**: Read `standards/task-execution.md` to understand the general execution process (task breakdown, planning, confirmations).
 
+1. **Search for enum usage**: Search the codebase to find where the enum is used. This provides crucial context about:
+   - How the enum values are accessed and used
+   - What methods or properties might be needed
+   - Common patterns and operations performed with the enum
+   - Integration points with other parts of the system (models, requests, policies, etc.)
+   - This context is essential for making informed refactoring decisions
+
 **THEN, follow these specific rules for enum refactoring:**
 
 - **Verify PHP version**: Ensure PHP 8.1+ is being used (enums require PHP 8.1+)
@@ -21,13 +28,14 @@
 ### Phase 1: Analysis and Planning
 
 - [ ] Read the complete enum file
+- [ ] **Search for enum usage** in the codebase to understand how it's used (models, requests, policies, controllers, etc.)
 - [ ] Verify PHP 8.1+ requirement is met
 - [ ] Identify code smells (magic strings, missing type hints, no docblocks, inconsistent values)
-- [ ] Check if enum should be backed (string/int) or pure enum
+- [ ] Check if enum should be backed (string/int) or pure enum based on database usage
 - [ ] Verify enum cases follow naming conventions (UPPER_CASE)
-- [ ] Check if enum needs methods, properties, or implements interfaces
+- [ ] Check if enum needs methods, properties, or implements interfaces based on usage patterns found
 - [ ] Review similar enums in codebase for consistency
-- [ ] Check if enum needs Eloquent casting
+- [ ] Check if enum needs Eloquent casting based on model usage
 - [ ] Present the plan to the user for approval
 - [ ] **WAIT FOR USER CONFIRMATION** - Do not proceed until user explicitly approves the plan
 - [ ] **EXPLAIN** any skipped tasks

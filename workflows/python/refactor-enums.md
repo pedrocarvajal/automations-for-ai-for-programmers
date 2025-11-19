@@ -6,6 +6,13 @@
 
 0. **Read the execution guide first**: Read `standards/task-execution.md` to understand the general execution process (task breakdown, planning, confirmations).
 
+1. **Search for enum usage**: Search the codebase to find where the enum is used. This provides crucial context about:
+   - How the enum values are accessed and used
+   - What methods or properties might be needed
+   - Common patterns and operations performed with the enum
+   - Integration points with other parts of the system
+   - This context is essential for making informed refactoring decisions
+
 **THEN, follow these specific rules for enum refactoring:**
 
 - **Run tests** after each phase - verify all tests pass
@@ -20,10 +27,11 @@
 ### Phase 1: Analysis and Planning
 
 - [ ] Read the complete enum file
+- [ ] **Search for enum usage** in the codebase to understand how it's used (imports, method calls, comparisons, etc.)
 - [ ] Identify code smells (missing `@unique`, no docstrings, inconsistent values, magic strings)
 - [ ] Check if enum values are meaningful or should use `auto()`
 - [ ] Verify enum members follow naming conventions (UPPER_CASE)
-- [ ] Check if enum needs methods or properties
+- [ ] Check if enum needs methods or properties based on usage patterns found
 - [ ] Review similar enums in codebase for consistency
 - [ ] Present the plan to the user for approval
 - [ ] **WAIT FOR USER CONFIRMATION** - Do not proceed until user explicitly approves the plan
