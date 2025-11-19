@@ -37,6 +37,14 @@
 - [ ] **WAIT FOR USER CONFIRMATION** - Do not proceed until user explicitly approves the plan
 - [ ] **EXPLAIN** any skipped tasks
 
+**Common Issues to Check:**
+
+- Enum used in multiple places but not found in search
+- Enum has unclear purpose or name
+- Enum structure doesn't match codebase patterns
+- Missing context about enum's role in the system
+- Similar enums exist with different patterns
+
 ### Phase 2: Structure and Organization
 
 - [ ] Reorganize structure according to recommended order:
@@ -52,6 +60,15 @@
 - [ ] **EXPLAIN** if structure was already correct (e.g., "Enum structure was already organized correctly, no changes needed")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
 
+**Common Issues to Check:**
+
+- Imports not in correct order
+- Missing code review comment
+- Enum members not logically ordered
+- Methods/properties in wrong position
+- Missing `@unique` decorator when values are unique
+- Linting errors after reorganization
+
 ### Phase 3: Values and Members
 
 - [ ] Use meaningful values (strings, ints) or `auto()` if values don't matter
@@ -61,6 +78,15 @@
 - [ ] Run tests and verify all pass
 - [ ] **EXPLAIN** if no changes were needed (e.g., "All enum members already follow best practices")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
+
+**Common Issues to Check:**
+
+- Enum members not in UPPER_CASE
+- Duplicate values exist
+- Meaningless values when `auto()` would be better
+- String values needed for API but not used
+- Integer values used when strings would be better
+- Tests failing after value changes
 
 ### Phase 4: Methods and Properties
 
@@ -72,6 +98,15 @@
 - [ ] **EXPLAIN** if no methods were needed (e.g., "Enum does not require additional methods")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
 
+**Common Issues to Check:**
+
+- Methods don't encapsulate enum-related behavior
+- Method names not descriptive (snake_case)
+- Missing type hints on method parameters
+- Missing return type annotations
+- Methods that should be properties instead
+- Tests failing after adding methods
+
 ### Phase 5: Documentation (Docstrings)
 
 - [ ] Add class-level docstring explaining purpose (Google style)
@@ -80,6 +115,15 @@
 - [ ] Verify there are no linting errors
 - [ ] **EXPLAIN** if documentation was already complete (e.g., "Enum already has complete docstrings")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
+
+**Common Issues to Check:**
+
+- Missing class-level docstring
+- Docstrings not in Google style
+- Missing docstrings on methods
+- Incomplete docstrings (missing Returns, Examples)
+- Obvious comments that repeat code
+- Complex members without inline comments
 
 ### Phase 6: Type Safety
 
@@ -91,6 +135,15 @@
 - [ ] **EXPLAIN** if types were already complete (e.g., "Enum already has correct type annotations")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
 
+**Common Issues to Check:**
+
+- Enum doesn't inherit from `Enum` correctly
+- Should inherit from `str, Enum` but doesn't
+- Missing type hints on methods
+- Missing return types on methods
+- mypy errors in strict mode
+- Linting errors after type changes
+
 ### Phase 7: Final Verification
 
 - [ ] Add code review comment at the beginning of the file (see `standards/task-notes.md` for format)
@@ -101,6 +154,16 @@
 - [ ] Verify `@unique` decorator is present (if applicable)
 - [ ] **EXPLAIN** any verification issues found and how they were resolved
 - [ ] **WAIT FOR USER CONFIRMATION** - Present final summary and wait for user approval
+
+**Common Issues to Check:**
+
+- Missing code review comment
+- Tests failing
+- Linting errors (ruff, mypy)
+- Enum structure inconsistent with codebase
+- Missing `@unique` decorator
+- Incomplete documentation
+- Type safety issues
 
 ---
 
@@ -337,6 +400,49 @@ class HttpStatus(Enum):
 
 ---
 
+## ERROR HANDLING AND EDGE CASES
+
+### Common Edge Cases to Handle
+
+When refactoring enums, consider these edge cases:
+
+- **Invalid enum values**: When converting from strings/ints to enum, handle invalid values gracefully
+- **None values**: Check if enum can be None and handle appropriately
+- **String comparison**: When using string enums, ensure case-insensitive comparison if needed
+- **Value serialization**: Ensure enum values serialize correctly for APIs/databases
+- **Backward compatibility**: When changing enum values, ensure existing code still works
+
+### Error Handling Best Practices
+
+- **Validation**: Validate enum values when converting from external sources (APIs, databases)
+- **Default values**: Provide sensible defaults when enum value is invalid
+- **Type checking**: Use type hints and mypy to catch enum-related type errors
+- **Testing**: Test enum methods with edge cases (None, invalid values, boundary conditions)
+
+### Troubleshooting Common Issues
+
+**Issue**: Tests fail after adding `@unique` decorator
+- **Cause**: Enum has duplicate values
+- **Solution**: Remove duplicates or use `auto()` if values don't matter
+
+**Issue**: mypy errors after refactoring
+- **Cause**: Type hints missing or incorrect
+- **Solution**: Add proper type annotations, use `str, Enum` if needed
+
+**Issue**: Enum values don't serialize correctly
+- **Cause**: Enum doesn't inherit from `str` when needed
+- **Solution**: Use `str, Enum` inheritance for string enums
+
+**Issue**: Import errors after refactoring
+- **Cause**: Enum moved or renamed
+- **Solution**: Update all imports, search codebase for enum usage
+
+**Issue**: Enum comparison fails
+- **Cause**: Comparing enum with string/int directly
+- **Solution**: Use `enum.value` for comparison or convert to enum first
+
+---
+
 ## WHAT TO DO
 
 ### Structure and Organization
@@ -376,7 +482,7 @@ class HttpStatus(Enum):
 
 ### Naming
 
-- Use UPPER_CNAKE_CASE for enum members
+- Use UPPER_SNAKE_CASE for enum members
 - Use descriptive names that convey meaning
 - Avoid abbreviations unless widely understood
 - Use singular nouns for enum class names

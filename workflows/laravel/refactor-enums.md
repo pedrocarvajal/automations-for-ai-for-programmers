@@ -6,7 +6,9 @@
 
 0. **Read the execution guide first**: Read `standards/task-execution.md` to understand the general execution process (task breakdown, planning, confirmations).
 
-1. **Search for enum usage**: Search the codebase to find where the enum is used. This provides crucial context about:
+1. **Read task notes standard**: Read `standards/task-notes.md` for code review comment format.
+
+2. **Search for enum usage**: Search the codebase to find where the enum is used. This provides crucial context about:
    - How the enum values are accessed and used
    - What methods or properties might be needed
    - Common patterns and operations performed with the enum
@@ -15,11 +17,42 @@
 
 **THEN, follow these specific rules for enum refactoring:**
 
-- **Verify PHP version**: Ensure PHP 8.1+ is being used (enums require PHP 8.1+)
-- **Run tests** after each phase - verify all tests pass
-- **Verify linting** after each phase - ensure no errors (PHPStan, Psalm, Laravel Pint)
-- **EXPLAIN SKIPPED TASKS** - If any task within a phase was not executed, the AI MUST explain why it was skipped (e.g., "Task X was not executed because Y was already present/not needed")
-- **ALWAYS review existing similar enums** in the codebase and follow the same pattern (structure, naming conventions, documentation style)
+- **MUST** verify PHP version - Ensure PHP 8.1+ is being used (enums require PHP 8.1+)
+- **MUST** run tests after each phase - verify all tests pass
+- **MUST** verify linting after each phase - ensure no errors (PHPStan, Psalm, Laravel Pint)
+- **REQUIRED** to explain skipped tasks - If any task within a phase was not executed, the AI MUST explain why it was skipped (e.g., "Task X was not executed because Y was already present/not needed")
+- **MANDATORY** to review existing similar enums in the codebase and follow the same pattern (structure, naming conventions, documentation style)
+
+---
+
+## CRITICAL RULES (NEVER VIOLATE)
+
+- **NEVER** modify enum case names without searching for all usages first
+- **NEVER** change enum values without checking if they're stored in database
+- **NEVER** remove enum cases without checking if they're used elsewhere
+- **NEVER** skip running tests between phases
+- **NEVER** proceed to next phase if current phase has failing tests
+- **NEVER** make changes silently - always explain what was changed and why
+- **NEVER** ignore linting errors - fix them immediately
+- **NEVER** skip user confirmations - always wait for explicit approval
+- **NEVER** use pure enum when values need database storage
+- **NEVER** omit `declare(strict_types=1)` directive
+- **ALWAYS** search codebase before making structural changes
+- **ALWAYS** verify tests pass after each phase
+- **ALWAYS** verify linting passes before proceeding
+- **ALWAYS** explain skipped tasks with clear reasoning
+
+---
+
+## PRE-REQUISITES CHECKLIST
+
+Before starting refactoring, verify:
+
+- [ ] Enum file exists and is readable
+- [ ] PHP 8.1+ is being used (enums require PHP 8.1+)
+- [ ] Tests exist for enum usage (or note if they don't)
+- [ ] Linting tools are configured (PHPStan, Psalm, Laravel Pint)
+- [ ] Database migrations checked if enum values are stored
 
 ---
 
@@ -36,9 +69,20 @@
 - [ ] Check if enum needs methods, properties, or implements interfaces based on usage patterns found
 - [ ] Review similar enums in codebase for consistency
 - [ ] Check if enum needs Eloquent casting based on model usage
+- [ ] Identify edge cases (unused cases, deprecated cases, migration needs)
+- [ ] Document any breaking changes that might occur
 - [ ] Present the plan to the user for approval
 - [ ] **WAIT FOR USER CONFIRMATION** - Do not proceed until user explicitly approves the plan
 - [ ] **EXPLAIN** any skipped tasks
+
+**Common Issues to Check:**
+
+- Enum file not found or unreadable
+- PHP version too old for enums
+- No usage found (may indicate enum is unused or needs migration)
+- Mixed naming conventions in existing code
+- Database values don't match enum values
+- Missing context about enum purpose
 
 ### Phase 2: Structure and Organization
 
@@ -56,8 +100,17 @@
 - [ ] Add section separators (`// ============================================`) if enum is large
 - [ ] Verify enum cases are ordered logically
 - [ ] Verify there are no linting errors
+- [ ] Run tests to ensure structure changes don't break functionality
 - [ ] **EXPLAIN** if structure was already correct (e.g., "Enum structure was already organized correctly, no changes needed")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
+
+**Common Issues to Check:**
+
+- Missing `declare(strict_types=1)` directive
+- Incorrect namespace
+- Enum cases in random order
+- Missing section separators for large enums
+- Linting errors after reorganization
 
 ### Phase 3: Values and Cases
 
@@ -66,9 +119,19 @@
 - [ ] Ensure all cases use UPPER_CASE naming
 - [ ] Verify values are meaningful and consistent
 - [ ] Check if values should be strings (for API compatibility) or integers (for performance)
+- [ ] Verify no duplicate values exist
+- [ ] Verify all database values can be mapped to enum cases (if applicable)
 - [ ] Run tests and verify all pass
 - [ ] **EXPLAIN** if no changes were needed (e.g., "All enum cases already follow best practices")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
+
+**Common Issues to Check:**
+
+- Using pure enum when database storage is needed
+- Inconsistent naming (lowercase, camelCase instead of UPPER_CASE)
+- Duplicate values in backed enum
+- Database values don't match enum values
+- Missing enum cases for existing database values
 
 ### Phase 4: Methods and Properties
 
@@ -77,9 +140,20 @@
 - [ ] Add type hints to all method parameters
 - [ ] Add return types to all methods
 - [ ] Use `self` or `static` return types when appropriate
+- [ ] Add PHPDoc to all methods (description, parameters, return type, examples if needed)
+- [ ] Use `match` expressions instead of `switch` or `if/elseif` chains
+- [ ] Verify methods handle all enum cases (exhaustive match)
 - [ ] Run tests and verify all pass
 - [ ] **EXPLAIN** if no methods were needed (e.g., "Enum does not require additional methods")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
+
+**Common Issues to Check:**
+
+- Methods that don't relate to enum behavior
+- Missing type hints or return types
+- Missing PHPDoc on methods
+- Non-exhaustive match expressions
+- Methods that should be static but aren't (or vice versa)
 
 ### Phase 5: Documentation (PHPDoc)
 
@@ -87,9 +161,19 @@
 - [ ] Add PHPDoc to all methods (if any)
 - [ ] Add inline comments for complex enum cases if needed
 - [ ] Include `@param`, `@return`, `@throws` where applicable
+- [ ] Add examples in PHPDoc for complex methods
+- [ ] Verify documentation matches actual implementation
 - [ ] Verify there are no linting errors
 - [ ] **EXPLAIN** if documentation was already complete (e.g., "Enum already has complete PHPDoc")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
+
+**Common Issues to Check:**
+
+- Missing class-level PHPDoc
+- Missing method PHPDoc
+- Outdated documentation that doesn't match code
+- Missing `@param` or `@return` tags
+- Obvious comments that repeat the code
 
 ### Phase 6: Type Safety
 
@@ -98,9 +182,19 @@
 - [ ] Add return types to all methods
 - [ ] Use `declare(strict_types=1)` at the top of the file
 - [ ] Verify PHPStan/Psalm passes with strict mode
+- [ ] Verify no `mixed` types are used when specific types are known
+- [ ] Verify type narrowing works correctly in match expressions
 - [ ] Verify there are no linting errors
 - [ ] **EXPLAIN** if types were already complete (e.g., "Enum already has correct type annotations")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
+
+**Common Issues to Check:**
+
+- Missing `declare(strict_types=1)`
+- Missing type hints on method parameters
+- Missing return types on methods
+- Using `mixed` instead of specific types
+- PHPStan/Psalm errors in strict mode
 
 ### Phase 7: Eloquent Integration (if applicable)
 
@@ -108,18 +202,38 @@
 - [ ] Add enum casting to model's `$casts` array
 - [ ] Verify casting works correctly (database -> enum -> database)
 - [ ] Test enum serialization/deserialization
+- [ ] Verify database column type matches enum backing type (string/int)
+- [ ] Test edge cases (null values, invalid values, missing cases)
 - [ ] Run tests and verify all pass
 - [ ] **EXPLAIN** if this phase is skipped (e.g., "Enum is not used in Eloquent models")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
+
+**Common Issues to Check:**
+
+- Missing enum casting in models
+- Database column type mismatch (string vs int)
+- Enum values don't match database values
+- Serialization/deserialization failures
+- Null handling issues
 
 ### Phase 8: Validation Rules (if applicable)
 
 - [ ] Check if enum is used in form requests
 - [ ] Add `Enum` validation rule to request classes
-- [ ] Verify validation works correctly
+- [ ] Verify validation works correctly (accepts valid enum values, rejects invalid ones)
+- [ ] Test validation error messages
+- [ ] Verify validation handles both enum instances and string/int values
 - [ ] Run tests and verify all pass
 - [ ] **EXPLAIN** if this phase is skipped (e.g., "Enum is not used in form validation")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
+
+**Common Issues to Check:**
+
+- Missing validation rules in form requests
+- Validation not accepting enum instances
+- Validation not rejecting invalid values
+- Poor validation error messages
+- Validation not handling edge cases
 
 ### Phase 9: Final Verification
 
@@ -127,10 +241,99 @@
 - [ ] Run all tests and verify they pass
 - [ ] Verify no linting errors (PHPStan, Psalm, Laravel Pint)
 - [ ] Review enum structure and consistency with codebase
-- [ ] Confirm complete documentation
+- [ ] Confirm complete documentation (class-level PHPDoc, method PHPDoc if applicable)
 - [ ] Verify `declare(strict_types=1)` is present
+- [ ] Verify enum cases follow UPPER_CASE naming convention
+- [ ] Verify enum is backed (string/int) if values are stored in database
+- [ ] Verify enum casting is added to models if applicable
+- [ ] Verify enum validation rules are added to requests if applicable
+- [ ] Check that all enum cases are used (or document why unused cases exist)
+- [ ] Verify no magic strings remain in codebase (replaced with enum)
 - [ ] **EXPLAIN** any verification issues found and how they were resolved
 - [ ] **WAIT FOR USER CONFIRMATION** - Present final summary and wait for user approval
+
+**Common Issues to Check:**
+
+- Missing code review comment
+- Tests failing after refactoring
+- Linting errors not resolved
+- Inconsistent naming with codebase
+- Missing documentation
+- Enum not properly typed
+- Missing Eloquent casting when needed
+- Missing validation rules when needed
+
+---
+
+## ERROR HANDLING AND EDGE CASES
+
+### Common Errors and Solutions
+
+**Error: "Enum case not found"**
+
+- **Cause**: Database contains value that doesn't match any enum case
+- **Solution**: Add missing enum case or create migration to update database values
+- **Prevention**: Verify all database values before refactoring
+
+**Error: "Cannot use pure enum for database storage"**
+
+- **Cause**: Attempting to store pure enum value in database
+- **Solution**: Convert to backed enum (string or int)
+- **Prevention**: Check database usage before deciding enum type
+
+**Error: "Type mismatch in casting"**
+
+- **Cause**: Database column type doesn't match enum backing type
+- **Solution**: Update database column type or change enum backing type
+- **Prevention**: Verify column types match enum backing types
+
+**Error: "Validation fails for valid enum"**
+
+- **Cause**: Validation rule not properly configured
+- **Solution**: Use `Illuminate\Validation\Rules\Enum` rule correctly
+- **Prevention**: Test validation with both enum instances and values
+
+**Error: "PHPStan/Psalm errors after refactoring"**
+
+- **Cause**: Type annotations missing or incorrect
+- **Solution**: Add proper type hints and return types, verify `declare(strict_types=1)` is present
+- **Prevention**: Run static analysis before and after refactoring
+
+### Edge Cases to Handle
+
+- **Null values**: Enums cannot be null, but database columns might be nullable
+  - Solution: Use nullable enum type or handle null separately
+- **Legacy database values**: Old values that don't match new enum cases
+  - Solution: Create migration to update values or add deprecated cases
+- **Case sensitivity**: String-backed enums are case-sensitive
+  - Solution: Normalize values or use case-insensitive comparison methods
+- **Unused enum cases**: Cases that exist but aren't used in codebase
+  - Solution: Document why they exist or remove if truly unused
+- **Breaking changes**: Changing enum values breaks existing code
+  - Solution: Create migration plan, update all usages, test thoroughly
+
+### Recovery Procedures
+
+**If tests fail after Phase 2 (Structure):**
+
+1. Revert structure changes
+2. Identify what broke
+3. Fix incrementally
+4. Re-run tests after each fix
+
+**If database values don't match enum:**
+
+1. Create data migration to update values
+2. Or add enum cases for existing values
+3. Verify all values are covered
+4. Test migration on staging first
+
+**If validation breaks:**
+
+1. Check validation rule syntax
+2. Verify enum class is correctly referenced
+3. Test with both enum instances and string/int values
+4. Check validation error messages
 
 ---
 

@@ -39,6 +39,13 @@
 - [ ] **WAIT FOR USER CONFIRMATION** - Do not proceed until user explicitly approves the plan
 - [ ] **EXPLAIN** any skipped tasks
 
+**Common Issues to Check:**
+
+- Helper used in multiple places but not found in search
+- Helper has unclear purpose or name
+- Helper location doesn't match usage patterns
+- Missing context about helper's role in the system
+
 ### Phase 2: Structure and Organization
 
 - [ ] Reorganize structure according to recommended order:
@@ -52,6 +59,14 @@
 - [ ] **EXPLAIN** if structure was already correct (e.g., "Helper structure was already organized correctly, no changes needed")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
 
+**Common Issues to Check:**
+
+- Imports not in correct order
+- Missing code review comment
+- Helper in wrong directory
+- Multiple unrelated functions in same file
+- Linting errors after reorganization
+
 ### Phase 3: Function Signature and Type Safety
 
 - [ ] Add complete type hints to all parameters
@@ -64,6 +79,16 @@
 - [ ] **EXPLAIN** if no changes were needed (e.g., "All type hints were already complete")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
 
+**Common Issues to Check:**
+
+- Missing type hints on parameters
+- Missing return type annotation
+- Overuse of `Any` type
+- Incorrect use of `Optional` vs `Union`
+- Parameter names not descriptive
+- Default values with incorrect types
+- Tests failing after adding type hints
+
 ### Phase 4: Error Handling and Edge Cases
 
 - [ ] Add handling for None values when appropriate
@@ -75,6 +100,15 @@
 - [ ] **EXPLAIN** if no error handling was needed (e.g., "Helper already handles all edge cases appropriately")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
 
+**Common Issues to Check:**
+
+- None values not handled
+- Empty collections not checked
+- Invalid types cause crashes
+- Exceptions raised for common edge cases
+- Default values not appropriate for use case
+- Tests failing due to new error handling
+
 ### Phase 5: Function Purity and Side Effects
 
 - [ ] Verify helper is a pure function (no side effects) when possible
@@ -84,6 +118,14 @@
 - [ ] Run tests and verify all pass
 - [ ] **EXPLAIN** if side effects are intentional and necessary
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
+
+**Common Issues to Check:**
+
+- Function modifies input parameters
+- Global state mutations present
+- Hidden side effects not documented
+- Function not pure when it could be
+- Tests failing due to side effect changes
 
 ### Phase 6: Documentation (Docstrings)
 
@@ -96,6 +138,16 @@
 - [ ] **EXPLAIN** if documentation was already complete or not needed (e.g., "Helper is simple and self-documenting, docstring not required")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
 
+**Common Issues to Check:**
+
+- Complex function missing docstring
+- Parameters not documented
+- Return value not documented
+- Missing examples for non-obvious behavior
+- Edge cases not mentioned
+- Docstring format not Google style
+- Linting errors in docstrings
+
 ### Phase 7: Export and Integration
 
 - [ ] Verify helper is exported in `__init__.py` if in subdirectory
@@ -104,6 +156,14 @@
 - [ ] Run tests and verify all pass
 - [ ] **EXPLAIN** if export was already correct (e.g., "Helper was already properly exported")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
+
+**Common Issues to Check:**
+
+- Helper not exported in `__init__.py`
+- Missing from `__all__` list
+- Imports fail from expected locations
+- Circular import issues
+- Tests failing due to import errors
 
 ### Phase 8: Final Verification
 
@@ -116,6 +176,15 @@
 - [ ] **EXPLAIN** any verification issues found and how they were resolved
 - [ ] **WAIT FOR USER CONFIRMATION** - Present final summary and wait for user approval
 
+**Common Issues to Check:**
+
+- Missing code review comment
+- Tests failing
+- Linting errors present
+- Inconsistent with codebase patterns
+- Incomplete type annotations
+- Inappropriate error handling
+
 ---
 
 ## HELPER FILE STRUCTURE
@@ -125,6 +194,7 @@
 ```python
 # Code reviewed on YYYY-MM-DD by {git_user_name}
 
+import os
 from typing import Optional
 
 
@@ -722,7 +792,7 @@ def get_sharpe_ratio(
     return result
 ```
 
-### Export Helper in __init__.py
+### Export Helper in **init**.py
 
 **Before:**
 
@@ -929,12 +999,14 @@ __all__ = [
 ### Generic Helpers (`helpers/`)
 
 Place in `helpers/` when:
+
 - Function is used across multiple domains/services
 - Function is a general utility (parsing, formatting, validation)
 - Function has no domain-specific knowledge
 - Function is framework-agnostic
 
 Examples:
+
 - `parse.py` - Generic parsing functions
 - `get_env.py` - Environment variable access
 - `get_slug.py` - URL slug generation
@@ -943,12 +1015,14 @@ Examples:
 ### Domain-Specific Helpers (`services/{domain}/helpers/`)
 
 Place in `services/{domain}/helpers/` when:
+
 - Function is specific to one domain/service
 - Function uses domain-specific types or interfaces
 - Function implements domain-specific logic
 - Function is only used within that domain
 
 Examples:
+
 - `services/gateway/helpers/has_api_error.py` - Gateway-specific error checking
 - `services/analytic/helpers/get_sharpe_ratio.py` - Financial calculation
 - `services/strategy/helpers/get_truncated_timeframe.py` - Strategy-specific logic
@@ -997,4 +1071,3 @@ if result is not None:
     # Type checker knows result is float here
     total = result * 2
 ```
-

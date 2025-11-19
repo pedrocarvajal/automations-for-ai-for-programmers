@@ -6,7 +6,9 @@
 
 0. **Read the execution guide first**: Read `standards/task-execution.md` to understand the general execution process (task breakdown, planning, confirmations).
 
-1. **Search for helper usage**: Search the codebase to find where the helper is used. This provides crucial context about:
+1. **Read task notes standard**: Read `standards/task-notes.md` for code review comment format.
+
+2. **Search for helper usage**: Search the codebase to find where the helper is used. This provides crucial context about:
    - How the helper function is imported and called
    - What parameters are commonly passed
    - Common patterns and operations performed with the helper
@@ -21,6 +23,27 @@
 - **Verify linting** after each phase - ensure no errors (PHPStan, Psalm, Laravel Pint)
 - **EXPLAIN SKIPPED TASKS** - If any task within a phase was not executed, the AI MUST explain why it was skipped (e.g., "Task X was not executed because Y was already present/not needed")
 - **ALWAYS review existing similar helpers** in the codebase and follow the same pattern (structure, naming conventions, documentation style)
+
+---
+
+## CRITICAL RULES (NEVER VIOLATE)
+
+- **NEVER** modify helper function signatures without searching for all usages first
+- **NEVER** remove a helper function without checking if it's used elsewhere
+- **NEVER** change return types without updating all callers
+- **NEVER** skip running tests between phases
+- **NEVER** proceed to next phase if current phase has failing tests
+- **NEVER** make changes silently - always explain what was changed and why
+- **NEVER** ignore linting errors - fix them immediately
+- **NEVER** skip user confirmations - always wait for explicit approval
+- **NEVER** omit `declare(strict_types=1)` directive
+- **NEVER** create global helpers without `function_exists()` check
+- **NEVER** forget to register global helpers in `composer.json` if needed
+- **ALWAYS** search codebase before making structural changes
+- **ALWAYS** verify tests pass after each phase
+- **ALWAYS** verify linting passes before proceeding
+- **ALWAYS** explain skipped tasks with clear reasoning
+- **ALWAYS** use snake_case for function names (Laravel convention)
 
 ---
 
@@ -41,6 +64,16 @@
 - [ ] Present the plan to the user for approval
 - [ ] **WAIT FOR USER CONFIRMATION** - Do not proceed until user explicitly approves the plan
 - [ ] **EXPLAIN** any skipped tasks
+
+**Common Issues to Check:**
+
+- Helper file not found or unreadable
+- PHP version too old (requires PHP 8.0+)
+- No usage found (may indicate helper is unused or needs migration)
+- Mixed naming conventions in existing code
+- Helper not registered in `composer.json` when it should be
+- Missing context about helper purpose
+- Helper in wrong location (should be global vs class method)
 
 ### Phase 2: Structure and Organization
 
@@ -940,7 +973,7 @@ if (! function_exists('parse_int')) {
 
 ---
 
-## PYTHON-SPECIFIC BEST PRACTICES
+## PHP/LARAVEL-SPECIFIC BEST PRACTICES
 
 ### Use Type Hints
 
