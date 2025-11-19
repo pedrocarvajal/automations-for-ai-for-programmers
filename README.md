@@ -50,4 +50,3 @@ When adding new workflows:
 ## License
 
 This repository contains automation guides and standards for AI-assisted code refactoring.
-
