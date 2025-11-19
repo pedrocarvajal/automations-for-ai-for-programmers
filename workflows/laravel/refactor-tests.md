@@ -4,14 +4,13 @@
 
 **BEFORE making any changes, THE AI MUST:**
 
-0. **Read the execution guide first**: Read `standards/task-execution.md` to understand how to proceed with task execution, including how to break down tasks, create task plans, and handle user confirmations.
+0. **Read the execution guide first**: Read `standards/task-execution.md` to understand the general execution process (task breakdown, planning, confirmations).
 
 **THEN, follow these specific rules for test refactoring:**
 
 - **Verify tests** after each phase - run tests and confirm they pass
 - **EXPLAIN SKIPPED TASKS** - If any task within a phase was not executed, the AI MUST explain why it was skipped (e.g., "Task X was not executed because Y was already present/not needed")
-
-**CRITICAL RULE**: When creating new helpers, constants, or any new element, **ALWAYS review existing ones in `Base.php` and follow the same pattern** (structure, parameters, documentation, naming conventions).
+- **ALWAYS review existing helpers in `Base.php`** and follow the same pattern (structure, parameters, documentation, naming conventions) when creating new helpers, constants, or any new element
 
 ---
 
@@ -21,7 +20,6 @@
 
 - [ ] Read the complete test file
 - [ ] Identify code smells (duplication, magic strings, long tests)
-- [ ] Create task plan with `todo_write` detailing all phases
 - [ ] Present the plan to the user for approval
 - [ ] **WAIT FOR USER CONFIRMATION** - Do not proceed until user explicitly approves the plan
 - [ ] **EXPLAIN** any skipped tasks (e.g., "No helpers needed to create" if Phase 2 is skipped)
@@ -98,11 +96,7 @@
 
 ### Phase 9: Final Verification
 
-- [ ] Add code review comment at the beginning of the file with:
-  - Note indicating this file was code reviewed
-  - Date (YYYY-MM-DD format only, no time) from local system date
-  - Git user name from git configuration (`git config user.name`)
-  - Format: `// Code reviewed on YYYY-MM-DD by {git_user_name}`
+- [ ] Add code review comment at the beginning of the file (see `standards/task-notes.md` for format)
 - [ ] Run all tests and verify they pass
 - [ ] Run tests by individual groups
 - [ ] Verify structure and navigability

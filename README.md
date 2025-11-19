@@ -7,11 +7,14 @@ A collection of structured workflows and standards for AI assistants to execute 
 ```
 automations-for-ai-for-programmers/
 ├── workflows/              # Step-by-step procedures for specific tasks
-│   └── php/
-│       ├── refactor-classes.md
-│       └── refactor-tests.md
+│   ├── laravel/
+│   │   ├── refactor-classes.md
+│   │   └── refactor-tests.md
+│   └── python/
+│       └── refactor-classes.md
 ├── standards/              # General execution standards and rules
-│   └── task-execution.md
+│   ├── task-execution.md
+│   └── task-notes.md
 └── README.md               # This file
 ```
 
@@ -19,10 +22,14 @@ automations-for-ai-for-programmers/
 
 Workflows are language-specific procedures that guide AI assistants through complex refactoring tasks:
 
-### PHP
+### Laravel
 
-- **[Refactor Classes](workflows/php/refactor-classes.md)**: Comprehensive guide for refactoring PHP classes (controllers, services, etc.) following best practices
-- **[Refactor Tests](workflows/php/refactor-tests.md)**: Guide for refactoring PHP test files to improve maintainability and reusability
+- **[Refactor Classes](workflows/laravel/refactor-classes.md)**: Comprehensive guide for refactoring Laravel/PHP classes (controllers, services, etc.) following best practices
+- **[Refactor Tests](workflows/laravel/refactor-tests.md)**: Guide for refactoring Laravel/PHP test files to improve maintainability and reusability
+
+### Python
+
+- **[Refactor Classes](workflows/python/refactor-classes.md)**: Comprehensive guide for refactoring Python classes following best practices
 
 ## Standards
 
@@ -35,7 +42,7 @@ Standards define the general execution framework that all workflows follow:
 When executing a refactoring task:
 
 1. **Read the execution standard first**: Start with `standards/task-execution.md` to understand the general process
-2. **Select the appropriate workflow**: Choose the workflow that matches your task (e.g., `workflows/php/refactor-classes.md`)
+2. **Select the appropriate workflow**: Choose the workflow that matches your task (e.g., `workflows/laravel/refactor-classes.md`)
 3. **Follow the workflow phases**: Execute each phase sequentially, waiting for user confirmation between phases
 
 ## Contributing
