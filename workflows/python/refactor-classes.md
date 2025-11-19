@@ -799,3 +799,44 @@ def full_name(self) -> str:
     """Get the full name of the resource."""
     return f"{self.first_name} {self.last_name}"
 ```
+
+### Code Formatting: Trailing Commas
+
+When function calls, class instantiations, or definitions span multiple lines, always include a trailing comma after the last parameter. This improves readability and makes diffs cleaner when adding new parameters.
+
+**Good: Multi-line with trailing comma**
+
+```python
+model_config = ConfigDict(
+    arbitrary_types_allowed=True,
+    str_strip_whitespace=True,
+)
+
+def process_resource(
+    resource_id: str,
+    data: Dict[str, Any],
+) -> ResourceModel:
+    pass
+
+service = ResourceService(
+    dependency=dependency,
+    logging_service=logging_service,
+)
+```
+
+**Bad: Single line or multi-line without trailing comma**
+
+```python
+model_config = ConfigDict(arbitrary_types_allowed=True, str_strip_whitespace=True)
+
+model_config = ConfigDict(
+    arbitrary_types_allowed=True,
+    str_strip_whitespace=True
+)
+
+def process_resource(
+    resource_id: str,
+    data: Dict[str, Any]
+) -> ResourceModel:
+    pass
+```
