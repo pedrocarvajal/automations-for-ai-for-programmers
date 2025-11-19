@@ -4,15 +4,14 @@
 
 **BEFORE making any changes, THE AI MUST:**
 
-0. **Read the execution guide first**: Read `standards/task-execution.md` to understand how to proceed with task execution, including how to break down tasks, create task plans, and handle user confirmations.
+0. **Read the execution guide first**: Read `standards/task-execution.md` to understand the general execution process (task breakdown, planning, confirmations).
 
 **THEN, follow these specific rules for class refactoring:**
 
 - **Run tests** after each phase - verify all tests pass
 - **Verify linting** after each phase - ensure no errors
 - **EXPLAIN SKIPPED TASKS** - If any task within a phase was not executed, the AI MUST explain why it was skipped (e.g., "Task X was not executed because Y was already present/not needed")
-
-**CRITICAL RULE**: When refactoring classes, **ALWAYS review existing similar classes** in the codebase and follow the same pattern (structure, naming conventions, documentation style).
+- **ALWAYS review existing similar classes** in the codebase and follow the same pattern (structure, naming conventions, documentation style)
 
 ---
 
@@ -23,7 +22,6 @@
 - [ ] Read the complete class file
 - [ ] Identify code smells (long methods, duplication, primitive obsession, feature envy)
 - [ ] Identify responsibilities (SRP violations)
-- [ ] Create task plan with `todo_write` detailing all phases
 - [ ] Present the plan to the user for approval
 - [ ] **WAIT FOR USER CONFIRMATION** - Do not proceed until user explicitly approves the plan
 - [ ] **EXPLAIN** any skipped tasks (e.g., "No services needed to extract" if Phase 2 is skipped)
