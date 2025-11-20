@@ -760,7 +760,7 @@ def create_resource(self, request: Any) -> Response:
 
 ```python
 def create_resource(self, request: Any) -> Response:
-    # ❌ No authorization check - security risk!
+    # INCORRECT: No authorization check - security risk!
     # Implementation
 ```
 
@@ -772,7 +772,7 @@ def create_resource(self, request: Any) -> Response:
 
 ```python
 def create_resource(self, request: Any) -> Response:
-    if request.user.role != "admin":  # ❌ Should use method or enum
+    if request.user.role != "admin":  # INCORRECT: Should use method or enum
         raise PermissionDenied()
     # Implementation
 ```
@@ -834,7 +834,7 @@ async def create_resource(
 
 ```python
 def process_resource(self, resource_id: str) -> ResourceModel:
-    service = ResourceService()  # ❌ Hard-coded dependency
+    service = ResourceService()  # INCORRECT: Hard-coded dependency
     return service.process(resource_id)
 ```
 
@@ -845,7 +845,7 @@ def process_resource(self, resource_id: str) -> ResourceModel:
 **Example:**
 
 ```python
-# Global variable - avoid ❌
+# Global variable - avoid (INCORRECT)
 _resource_service = ResourceService()
 
 def process_resource(self, resource_id: str) -> ResourceModel:
@@ -862,7 +862,7 @@ def process_resource(self, resource_id: str) -> ResourceModel:
 class ResourceService:
     @classmethod
     def create(cls) -> "ResourceService":
-        return cls(dependency)  # ❌ Should use constructor injection
+        return cls(dependency)  # INCORRECT: Should use constructor injection
 ```
 
 ---

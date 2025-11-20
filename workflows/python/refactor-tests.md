@@ -33,6 +33,7 @@
 - **NEVER** create helpers without reviewing existing patterns in wrapper classes
 - **NEVER** use magic values - always use constants
 - **NEVER** duplicate test logic - use parameterized tests instead
+- **NEVER** use logging statements in tests (info, debug) - only use for error/warning/critical messages when necessary for debugging
 - **ALWAYS** search codebase for existing helpers before creating new ones
 - **ALWAYS** verify tests pass after each phase
 - **ALWAYS** verify linting passes before proceeding
@@ -44,6 +45,7 @@
 ## ERROR HANDLING
 
 If at any point:
+
 - Tests fail: **STOP immediately**, report to user, do NOT continue
 - Linting errors appear: **STOP immediately**, fix errors before continuing
 - User requests changes: **STOP immediately**, wait for new instructions
@@ -228,23 +230,28 @@ Before starting refactoring, verify:
 - Tests failing after adding type hints (should not happen)
 - Linting errors from type hints
 
-### Phase 8: Comment Cleanup
+### Phase 8: Comment and Logging Cleanup
 
 - [ ] Remove obvious comments that add no value
 - [ ] Add comments only where they explain complex context or edge cases
 - [ ] Verify test names are descriptive (no need for comments)
-- [ ] **VERIFY**: Ensure no important context was removed with comments
+- [ ] **IDENTIFY** all logging statements in test methods
+- [ ] **REMOVE** unnecessary logging statements (info, debug) from test methods
+- [ ] **KEEP** only logging statements for error/warning/critical messages when necessary for debugging
+- [ ] **VERIFY**: Ensure no important context was removed with comments or logs
 - [ ] Run tests and verify all pass
 - [ ] Verify there are no linting errors
-- [ ] **EXPLAIN** if no cleanup was needed (e.g., "No unnecessary comments found, all comments are meaningful")
+- [ ] **EXPLAIN** if no cleanup was needed (e.g., "No unnecessary comments or logs found, all are meaningful")
 - [ ] **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
 
 **Common Issues to Check:**
 
 - Removing comments that explain important context
+- Removing logs that are necessary for debugging errors/warnings
 - Test names not descriptive enough after comment removal
-- Tests failing after comment cleanup (should not happen)
+- Tests failing after comment/logging cleanup (should not happen)
 - Missing comments for complex edge cases
+- Keeping unnecessary info/debug logs that don't add value
 
 ### Phase 9: Final Verification
 
@@ -330,6 +337,69 @@ class TestGatewayHandler(BinanceWrapper):
 
 ---
 
+## LOGGING IN TESTS
+
+### Rules for Logging in Test Methods
+
+**DO NOT use logging for informational purposes:**
+
+- INCORRECT: `self._log.info("Placing a market order")` - Test name already describes this
+- INCORRECT: `self._log.info(f"Order placed successfully: {order.id}")` - Redundant with test name
+- INCORRECT: `self._log.debug("Starting test execution")` - Not needed in tests
+
+**ONLY use logging for error tracking:**
+
+- CORRECT: `self._log.warning("Order price is 0, attempting to get from gateway")` - Useful for debugging edge cases
+- CORRECT: `self._log.error("Failed to retrieve order from gateway")` - Critical error tracking
+- CORRECT: `self._log.critical("Gateway connection lost during test")` - Critical failure tracking
+
+### Examples
+
+**Bad: Unnecessary info logs**
+
+```python
+def test_place_order_market(self) -> None:
+    self._log.info("Placing a market BUY order for BTCUSDT")  # INCORRECT: Redundant
+    order = self._place_test_order(...)
+    self._log.info(f"Order placed successfully: {order.id}")  # INCORRECT: Redundant
+    self._assert_order_is_valid(order=order, expected_type=OrderType.MARKET)
+```
+
+**Good: No logs needed**
+
+```python
+def test_place_order_market(self) -> None:
+    """Test placing a market BUY order for BTCUSDT."""
+    order = self._place_test_order(...)
+    self._assert_order_is_valid(order=order, expected_type=OrderType.MARKET)
+```
+
+**Good: Logging for error tracking**
+
+```python
+def test_open_order_with_polling(self) -> None:
+    """Test order opening with status polling."""
+    order = self._build_order_model(...)
+    result = self._handler.open_order(order)
+
+    if order.price == 0:
+        self._log.warning("Order price is 0, attempting to get from gateway")  # CORRECT: Useful
+        gateway_order = self._gateway.get_order(...)
+        if gateway_order and gateway_order.price > 0:
+            self._log.info(f"Retrieved price from gateway: {gateway_order.price}")  # CORRECT: Useful
+        else:
+            self._log.warning("Gateway order also has price 0")  # CORRECT: Useful for debugging
+```
+
+### Rationale
+
+- **Test names are self-documenting**: A well-named test like `test_place_order_market` already tells you what it does
+- **Reduces noise**: Unnecessary logs clutter test output and make it harder to find real issues
+- **Focus on failures**: Logs should only appear when something unexpected happens (errors, warnings)
+- **Better debugging**: When a test fails, you want to see error/warning logs, not info about normal flow
+
+---
+
 ## WHAT TO DO
 
 ### Helpers and Reusability
@@ -375,6 +445,13 @@ class TestGatewayHandler(BinanceWrapper):
 - Keep test names descriptive (they don't need comments)
 - Document helpers with complete docstrings
 
+### Logging
+
+- **DO NOT** use logging statements (info, debug) in test methods
+- **ONLY** use logging for error/warning/critical messages when necessary for debugging or tracking failures
+- Test names should be descriptive enough that info logs are redundant
+- Remove informational logs that just repeat what the test name already describes
+
 ---
 
 ## WHAT NOT TO DO
@@ -403,12 +480,22 @@ class TestGatewayHandler(BinanceWrapper):
 - DO NOT comment every line of code
 - DO NOT use comments as an excuse for unclear names
 
+### Logging
+
+- DO NOT use `self._log.info()` or `self._log.debug()` in test methods
+- DO NOT add informational logs that just describe what the test is doing
+- DO NOT use logs as a substitute for descriptive test names
+- ONLY use `self._log.error()`, `self._log.warning()`, or `self._log.critical()` when necessary for debugging failures
+
 ### Tests
 
 - DO NOT create tests without type hints
 - DO NOT omit docstrings in helpers
 - DO NOT advance to next phase without verifying tests pass
 - DO NOT ignore mypy type errors
+- DO NOT use logging statements (info, debug) in test methods
+- DO NOT add informational logs that just repeat what the test name already describes
+- ONLY use logging for error/warning/critical messages when necessary for debugging or tracking failures
 
 ---
 
@@ -484,6 +571,12 @@ class TestGatewayHandler(BinanceWrapper):
 - [ ] Self-documenting test names
 - [ ] Complete docstrings in helpers
 - [ ] Type hints on all methods
+
+### Logging
+
+- [ ] No unnecessary logging statements (info, debug) in test methods
+- [ ] Only error/warning/critical logs when necessary for debugging
+- [ ] Test names are descriptive enough (no need for info logs)
 
 ### Verification
 
@@ -585,8 +678,10 @@ class TestGatewayHandler(BinanceWrapper):
 ## COMMON ERRORS TO AVOID
 
 ### Error 1: Breaking Existing Tests
+
 **Problem**: Refactoring breaks existing functionality
-**Prevention**: 
+**Prevention**:
+
 - Run tests BEFORE starting each phase
 - Run tests AFTER completing each phase
 - If tests fail, STOP and fix before continuing
@@ -594,24 +689,30 @@ class TestGatewayHandler(BinanceWrapper):
 - Never modify test logic, only structure
 
 ### Error 2: Not Following Existing Patterns
+
 **Problem**: Creating helpers or constants that don't match existing codebase patterns
 **Prevention**:
+
 - Always review wrapper class helpers first
 - Search for similar patterns in codebase
 - Follow existing naming conventions
 - Match existing structure and documentation style
 
 ### Error 3: Changing Test Logic
+
 **Problem**: Accidentally modifying test assertions or logic during refactoring
 **Prevention**:
+
 - Only refactor structure, never logic
 - Use version control to compare changes
 - Verify test count remains same (unless parameterizing)
 - Review changes carefully before committing
 
 ### Error 4: Skipping Validation Steps
+
 **Problem**: Not verifying tests/linting between phases
 **Prevention**:
+
 - Always run tests after each phase
 - Always verify linting after each phase
 - Always verify type checking after each phase
@@ -619,8 +720,10 @@ class TestGatewayHandler(BinanceWrapper):
 - Document all verification steps
 
 ### Error 5: Not Searching for Existing Code
+
 **Problem**: Creating helpers or constants that already exist
 **Prevention**:
+
 - Always search wrapper classes before creating helpers
 - Check for existing constants before creating new ones
 - Review similar test files for patterns
@@ -637,4 +740,5 @@ A test file must be:
 - **Maintainable**: Easy to understand and modify
 - **Type-safe**: Complete type hints for all methods
 - **Documented**: Complete docstrings where necessary
-- **Clean**: No unnecessary comments, self-documenting code
+- **Clean**: No unnecessary comments or logging statements, self-documenting code
+- **Focused**: Only error/warning/critical logs when necessary for debugging

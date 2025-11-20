@@ -344,16 +344,16 @@ A well-audited documentation guide must be:
 
 If you see any of these, the document needs improvement:
 
-- ❌ Vague instructions ("try to", "maybe", "sometimes")
-- ❌ Missing checkboxes for actionable steps
-- ❌ No examples or only positive examples
-- ❌ No explicit constraints (MUST/MUST NOT)
-- ❌ Missing user confirmation points
-- ❌ No validation or verification steps
-- ❌ Contradictory statements
-- ❌ Undefined technical terms
-- ❌ Steps out of logical order
-- ❌ Missing final checklist
-- ❌ Inconsistent formatting
-- ❌ No error handling guidance
+- INCORRECT: Vague instructions ("try to", "maybe", "sometimes")
+- INCORRECT: Missing checkboxes for actionable steps
+- INCORRECT: No examples or only positive examples
+- INCORRECT: No explicit constraints (MUST/MUST NOT)
+- INCORRECT: Missing user confirmation points
+- INCORRECT: No validation or verification steps
+- INCORRECT: Contradictory statements
+- INCORRECT: Undefined technical terms
+- INCORRECT: Steps out of logical order
+- INCORRECT: Missing final checklist
+- INCORRECT: Inconsistent formatting
+- INCORRECT: No error handling guidance
 
