@@ -11,7 +11,10 @@ automations-for-ai-for-programmers/
 │   │   ├── refactor-classes.md
 │   │   └── refactor-tests.md
 │   └── python/
-│       └── refactor-classes.md
+│       ├── refactor-classes.md
+│       ├── refactor-enums.md
+│       ├── refactor-helpers.md
+│       └── refactor-strategies.md
 ├── standards/              # General execution standards and rules
 │   ├── task-execution.md
 │   └── task-notes.md
@@ -30,6 +33,9 @@ Workflows are language-specific procedures that guide AI assistants through comp
 ### Python
 
 - **[Refactor Classes](workflows/python/refactor-classes.md)**: Comprehensive guide for refactoring Python classes following best practices
+- **[Refactor Enums](workflows/python/refactor-enums.md)**: Guide for refactoring Python enums to improve maintainability and consistency
+- **[Refactor Helpers](workflows/python/refactor-helpers.md)**: Guide for refactoring Python helper functions to improve reusability and maintainability
+- **[Refactor Strategies](workflows/python/refactor-strategies.md)**: Comprehensive guide for refactoring Python trading strategies following best practices
 
 ## Standards
 
