@@ -47,6 +47,7 @@
 ## ERROR HANDLING
 
 If at any point:
+
 - Tests fail: **STOP immediately**, report to user, do NOT continue
 - Linting errors appear: **STOP immediately**, fix errors before continuing
 - User requests changes: **STOP immediately**, wait for new instructions
@@ -97,16 +98,21 @@ If at any point:
    - Needs to be mockable for testing → should be injected
    - Is a service/repository → should be injected
    - Is a simple value/config → can be created internally
+   - **CRITICAL**: Services like `LoggingService` should be instantiated directly inside the constructor, NOT injected as parameters
 6. **REFACTOR**: For each dependency to inject:
    - Add parameter to `__init__`
    - Store as private attribute (prefixed with `_`)
    - Remove direct instantiation
    - Update all callers if needed (check from Phase 1 search)
-7. **VERIFY**: All existing tests still pass
-8. **VERIFY**: No new linting errors introduced
-9. **VERIFY**: Dependency injection works correctly
-10. **EXPLAIN** if any dependency injection tasks were skipped (e.g., "No dependencies needed injection, class has no dependencies")
-11. **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
+7. **REFACTOR**: For services that should be created internally (like LoggingService):
+   - Keep instantiation inside the constructor
+   - Do NOT add as constructor parameter
+   - Do NOT make it optional/injectable
+8. **VERIFY**: All existing tests still pass
+9. **VERIFY**: No new linting errors introduced
+10. **VERIFY**: Dependency injection works correctly
+11. **EXPLAIN** if any dependency injection tasks were skipped (e.g., "No dependencies needed injection, class has no dependencies")
+12. **WAIT FOR USER CONFIRMATION** - Explicitly stop and wait for user approval before continuing
 
 ### Phase 3: Class Structure and Organization
 
@@ -241,22 +247,23 @@ class ResourceService(ServiceInterface):
     def __init__(
         self,
         dependency: DependencyType,
-        logging_service: Optional[LoggingService] = None,
     ) -> None:
         """
         Initialize the service.
 
         Args:
             dependency: Description of dependency.
-            logging_service: Optional logging service instance. If not provided,
-                a new LoggingService instance will be created.
 
         Raises:
             ValueError: If dependency is invalid.
         """
-        self._dependency = dependency
-        self._log = logging_service or LoggingService()
+        self._log = LoggingService()
         self._log.setup(name="resource_service")
+
+        self._initialized = False
+        self._cache = {}
+
+        self._dependency = dependency
 
     # ───────────────────────────────────────────────────────────
     # PUBLIC METHODS
@@ -472,40 +479,50 @@ A refactored class is considered successful when:
 ## COMMON ERRORS TO AVOID
 
 ### Error 1: Breaking Existing Tests
+
 **Problem**: Refactoring breaks existing functionality
-**Prevention**: 
+**Prevention**:
+
 - Run tests BEFORE starting each phase
 - Run tests AFTER completing each phase
 - If tests fail, STOP and fix before continuing
 - Never skip test verification
 
 ### Error 2: Changing Public API Without Review
+
 **Problem**: Modifying method signatures without considering callers
 **Prevention**:
+
 - Search codebase for all usages first (Phase 1)
 - Present API changes to user before implementing
 - Update all callers in same phase if signature changes
 - Never change return types without updating callers
 
 ### Error 3: Incomplete Type Hints
+
 **Problem**: Adding `Any` types instead of specific types
 **Prevention**:
+
 - Use `grep` to find actual types used in codebase
 - Check return types of dependencies
 - Use `Union` or `Optional` when appropriate
 - Verify with mypy strict mode
 
 ### Error 4: Skipping Validation Steps
+
 **Problem**: Not verifying tests/linting between phases
 **Prevention**:
+
 - Always run tests after each phase
 - Always verify linting after each phase
 - Never proceed if validation fails
 - Document all verification steps
 
 ### Error 5: Not Searching for Usage
+
 **Problem**: Making changes without understanding impact
 **Prevention**:
+
 - Always search codebase before structural changes
 - Understand all callers before modifying methods
 - Present impact analysis to user
@@ -579,10 +596,11 @@ A refactored class is considered successful when:
 
 ### Dependency Injection
 
-- Use constructor injection (pass dependencies to `__init__`)
+- Use constructor injection (pass dependencies to `__init__`) for dependencies that need to be mockable or swapped
 - Store dependencies as private attributes (prefixed with `_`)
-- Inject services, repositories, and other dependencies
-- Avoid direct instantiation (`Class()`)
+- Inject services, repositories, and other dependencies that need to be swapped
+- **CRITICAL**: Services like `LoggingService` should be instantiated directly inside the constructor, NOT injected as parameters
+- Avoid direct instantiation (`Class()`) for dependencies that need to be mockable
 - Use dependency injection frameworks when appropriate (FastAPI `Depends`, etc.)
 
 ### Documentation
@@ -632,9 +650,10 @@ A refactored class is considered successful when:
 ### Dependency Injection
 
 - DO NOT use global state or singletons unnecessarily
-- DO NOT instantiate dependencies directly (`Service()`)
+- DO NOT instantiate dependencies directly (`Service()`) for dependencies that need to be mockable
+- DO NOT inject services like `LoggingService` as constructor parameters - instantiate them directly inside the constructor
 - DO NOT use class methods for dependencies when instance methods are appropriate
-- DO NOT hardcode dependencies
+- DO NOT hardcode dependencies that need to be swapped
 
 ### Documentation
 
@@ -769,11 +788,13 @@ class ResourceService:
     def __init__(
         self,
         dependency: DependencyType,
-        logging_service: Optional[LoggingService] = None,
     ) -> None:
         self._dependency = dependency
-        self._log = logging_service or LoggingService()
+        self._log = LoggingService()
+        self._log.setup(name="resource_service")
 ```
+
+**Note**: Services like `LoggingService` should be instantiated directly inside the constructor, NOT injected as parameters. Only inject dependencies that need to be mockable or swapped (like repositories, external services, etc.).
 
 ### Good: Multiple Dependencies
 
